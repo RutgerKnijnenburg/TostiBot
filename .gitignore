@@ -1,0 +1,9 @@
+*.dll
+*.pdb
+obj/**
+bin/**
+runtimes/**
+.vs/**
+TostiBot.bot
+Properties/**
+PostDeployScripts/**
