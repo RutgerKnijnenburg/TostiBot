@@ -5,5 +5,3 @@ bin/**
 runtimes/**
 .vs/**
 TostiBot.bot
-Properties/**
-PostDeployScripts/**
