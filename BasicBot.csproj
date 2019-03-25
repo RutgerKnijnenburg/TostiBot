@@ -50,6 +50,11 @@
   </ItemGroup>
  <ItemGroup>
    <Folder Include="Resources\images\" />
+ </ItemGroup>
+ <ItemGroup>
+   <Compile Update="Startup.cs">
+     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+   </Compile>
  </ItemGroup> 
 
   <Import Project="PostDeployScripts\IncludeSources.targets" Condition="Exists('PostDeployScripts\IncludeSources.targets')" />
