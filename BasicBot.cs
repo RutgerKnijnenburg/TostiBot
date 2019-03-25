@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using BasicBot;
+using BasicBot.Dialogs.Info;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -27,6 +28,7 @@ namespace Microsoft.BotBuilderSamples
         public const string HelpIntent = "Help";
         public const string GetTypesIntent = "GetTypes";
         public const string NoneIntent = "None";
+        public const string InfoIntent = "GetInfo";
 
         /// <summary>
         /// Key in the bot config (.bot file) for the LUIS instance.
@@ -36,8 +38,10 @@ namespace Microsoft.BotBuilderSamples
 
         private readonly IStatePropertyAccessor<GreetingState> _greetingStateAccessor;
         private readonly IStatePropertyAccessor<TypeState> _getTypesStateAccessor;
-        private readonly IStatePropertyAccessor<DialogState> _dialogStateAccessor;
+        private readonly IStatePropertyAccessor<DialogState> _dialogStateAccessor; 
+private readonly IStatePropertyAccessor<InfoState> _infoStateAccessor;
         private readonly UserState _userState;
+        private readonly InfoState _infoState;
         private readonly TypeState _typeState;
         private readonly ConversationState _conversationState;
         private readonly Storage _storage;
@@ -58,6 +62,7 @@ namespace Microsoft.BotBuilderSamples
             _greetingStateAccessor = _userState.CreateProperty<GreetingState>(nameof(GreetingState));
             _dialogStateAccessor = _conversationState.CreateProperty<DialogState>(nameof(DialogState));
             _getTypesStateAccessor = _conversationState.CreateProperty<TypeState>(nameof(TypeState));
+            _infoStateAccessor = _conversationState.CreateProperty<InfoState>(nameof(InfoState));
 
             // Verify LUIS configuration.
             if (!_services.LuisServices.ContainsKey(LuisConfiguration))
@@ -67,6 +72,7 @@ namespace Microsoft.BotBuilderSamples
 
             Dialogs = new DialogSet(_dialogStateAccessor);
             Dialogs.Add(new GreetingDialog(_greetingStateAccessor, loggerFactory));
+            Dialogs.Add(new InfoDialog(_infoStateAccessor, loggerFactory));
             Dialogs.Add(new GetTypesDialog(_getTypesStateAccessor, loggerFactory, _storage));
         }
 
@@ -97,8 +103,9 @@ namespace Microsoft.BotBuilderSamples
                 var topIntent = topScoringIntent.Value.intent;
 
                 // update greeting state with any entities captured
-                await UpdateGreetingState(luisResults, dc.Context);
-                await UpdateTypeState(luisResults, dc.Context);
+               
+                
+                
 
                 // Handle conversation interrupts first.
                 var interrupted = await IsTurnInterruptedAsync(dc, topIntent);
@@ -124,10 +131,16 @@ namespace Microsoft.BotBuilderSamples
                             switch (topIntent)
                             {
                                 case GreetingIntent:
+                                    await UpdateGreetingState(luisResults, dc.Context);
                                     await dc.BeginDialogAsync(nameof(GreetingDialog));
                                     break;
                                 case GetTypesIntent:
+                                    await UpdateTypeState(luisResults, dc.Context);
                                     await dc.BeginDialogAsync(nameof(GetTypesDialog));
+                                    break;
+                                case InfoIntent:
+                                    await UpdateInfoState(luisResults, dc.Context);
+                                    await dc.BeginDialogAsync(nameof(InfoDialog));
                                     break;
                                 case NoneIntent:
                                 default:
@@ -229,6 +242,36 @@ namespace Microsoft.BotBuilderSamples
             };
         }
 
+        private async Task UpdateInfoState(RecognizerResult luisResult, ITurnContext turnContext)
+        {
+            if (luisResult.Entities != null && luisResult.Entities.HasValues)
+            {
+                // Get latest GreetingState
+                var infoState = await _infoStateAccessor.GetAsync(turnContext, () => new InfoState());
+                var entities = luisResult.Entities;
+
+                // Supported LUIS Entities
+                string[] infoEntities = { "History", "Recipe" };
+
+                // Update any entities
+                // Note: Consider a confirm dialog, instead of just updating.
+                foreach (var name in infoEntities)
+                {
+                    // Check if we found valid slot values in entities returned from LUIS.
+                    if (entities[name] != null)
+                    {
+                        // Capitalize and set new user name.
+                        var newName = (string)entities[name][0];
+                        infoState.CurrentEntity = char.ToUpper(newName[0]) + newName.Substring(1);
+                        break;
+                    }
+                }
+
+                // Set the new values into state.
+                await _infoStateAccessor.SetAsync(turnContext, infoState);
+            }
+        }
+
         private async Task UpdateTypeState(RecognizerResult luisResult, ITurnContext turnContext)
         {
             if (luisResult.Entities != null && luisResult.Entities.HasValues)
@@ -238,7 +281,7 @@ namespace Microsoft.BotBuilderSamples
                 var entities = luisResult.Entities;
 
                 // Supported LUIS Entities
-                string[] userNameEntities = { "Meat", "Cheese", "Bread" };
+                string[] userNameEntities = { "Meat", "Cheese", "Bread"};
 
                 // Update any entities
                 // Note: Consider a confirm dialog, instead of just updating.

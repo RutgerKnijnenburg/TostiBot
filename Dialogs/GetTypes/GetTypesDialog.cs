@@ -116,7 +116,6 @@ namespace Microsoft.BotBuilderSamples
                .ToAttachment();
                 attachments.Add(hero);
             }
-
             var activity = MessageFactory.Carousel(attachments);
 
             return await context.SendActivityAsync(activity, cancellationToken: cancellationToken);

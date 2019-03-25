@@ -13,7 +13,7 @@
       "spacing": "medium",
       "size": "default",
       "weight": "bolder",
-      "text": "Welcome to Bot Framework!",
+      "text": "Welcome to Tosti Intelligence!",
       "wrap": true,
       "maxLines": 0
     },
@@ -21,7 +21,15 @@
       "type": "TextBlock",
       "size": "default",
       "isSubtle": "yes",
-      "text": "Now that you have successfully run your bot, follow the links in this Adaptive Card to expand your knowledge of Bot Framework.",
+      "text": "This is a fictive Tosti Bot, able to give you information about Grilled Sandwiches. The source file is available at www.mavention.nl.",
+      "wrap": true,
+      "maxLines": 0
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "isSubtle": "no",
+      "text": "You can perform several actions with this bot which understands natural language thanks to LUIS.",
       "wrap": true,
       "maxLines": 0
     }
@@ -29,18 +37,18 @@
   "actions": [
     {
       "type": "Action.OpenUrl",
-      "title": "Get an overview",
-      "url": "https://docs.microsoft.com/en-us/azure/bot-service/?view=azure-bot-service-4.0"
+      "title": "What is a tosti?",
+      "url": "https://en.wikipedia.org/wiki/Croque_monsieur"
     },
     {
       "type": "Action.OpenUrl",
-      "title": "Ask a question",
-      "url": "https://stackoverflow.com/questions/tagged/botframework"
+      "title": "Source files",
+      "url": "https://github.com/RutgerKnijnenburg/TostiBot"
     },
     {
       "type": "Action.OpenUrl",
-      "title": "Learn how to deploy",
-      "url": "https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-howto-deploy-azure?view=azure-bot-service-4.0"
+      "title": "What is this all about?",
+      "url": "https://www.mavention.nl/techblog/introduction-to-azures-cognitive-services/"
     }
   ]
 }
