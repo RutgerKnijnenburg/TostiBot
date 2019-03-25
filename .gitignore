@@ -6,3 +6,4 @@ runtimes/**
 .vs/**
 TostiBot.bot
 PublishProfiles/**
+wwwroot/**

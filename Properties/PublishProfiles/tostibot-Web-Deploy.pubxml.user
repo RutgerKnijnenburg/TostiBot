@@ -4,4 +4,8 @@ This file is used by the publish/package process of your Web project. You can cu
 by editing this MSBuild file. In order to learn more about this please visit https://go.microsoft.com/fwlink/?LinkID=208121. 
 -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAiwqKODrV6UGaCqAxzJZb1wAAAAACAAAAAAAQZgAAAAEAACAAAAArp/qpudrpEU6fWKlLYJRHUP6AcQG/pqY7iF8X2XYEAAAAAAAOgAAAAAIAACAAAADwLYZpKlDucDppGv6nSyvlWRYniPIVcCAjbnYoKtHotIAAAACON7Qhr3068zrGOqxZQn5ike56Ac++EfrefZlOnKbrYToEwCYr4pYpze0FtovmQUjML3AhvcTbkVcP+XvwjlJWFxDQPtriDFWk5Xi0xWDbw3Gm5JYTIz4J4uBfVxqJAd+r6Zrh19tqC+3MspGJR6Px8SQd0Iu93qPfSd/g4NOl+0AAAAAtcIx5WfB7jd6c1e14C2Hnsb6oIUjVOG4MwgVtmADsGscftadjOIML448xOO93SSD99rYEfSZAQhp2f9eLDFHZ</EncryptedPassword>
+  </PropertyGroup>
 </Project>
