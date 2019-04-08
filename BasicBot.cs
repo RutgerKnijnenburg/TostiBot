@@ -22,11 +22,15 @@ namespace Microsoft.BotBuilderSamples
     /// </summary>
     public class BasicBot : IBot
     {
+        /* QnA Maker bot variables*/
+        public static readonly string QnAMakerKey = "QnABot";
+
         // Supported LUIS Intents
         public const string GreetingIntent = "Greeting";
         public const string CancelIntent = "Cancel";
         public const string HelpIntent = "Help";
         public const string GetTypesIntent = "GetTypes";
+        public const string GetTostiBotInfoIntent = "GetTostiBotInfo";
         public const string NoneIntent = "None";
         public const string InfoIntent = "GetInfo";
 
@@ -69,6 +73,11 @@ private readonly IStatePropertyAccessor<InfoState> _infoStateAccessor;
             {
                 throw new InvalidOperationException($"The bot configuration does not contain a service type of `luis` with the id `{LuisConfiguration}`.");
             }
+            if (!_services.QnAServices.ContainsKey(QnAMakerKey))
+            {
+                throw new System.ArgumentException(
+                    $"Invalid configuration. Please check your '.bot' file for a QnA service named '{QnAMakerKey}'.");
+            }
 
             Dialogs = new DialogSet(_dialogStateAccessor);
             Dialogs.Add(new GreetingDialog(_greetingStateAccessor, loggerFactory));
@@ -101,12 +110,6 @@ private readonly IStatePropertyAccessor<InfoState> _infoStateAccessor;
                 var topScoringIntent = luisResults?.GetTopScoringIntent();
 
                 var topIntent = topScoringIntent.Value.intent;
-
-                // update greeting state with any entities captured
-               
-                
-                
-
                 // Handle conversation interrupts first.
                 var interrupted = await IsTurnInterruptedAsync(dc, topIntent);
                 if (interrupted)
@@ -142,11 +145,11 @@ private readonly IStatePropertyAccessor<InfoState> _infoStateAccessor;
                                     await UpdateInfoState(luisResults, dc.Context);
                                     await dc.BeginDialogAsync(nameof(InfoDialog));
                                     break;
+                                case GetTostiBotInfoIntent:
                                 case NoneIntent:
                                 default:
-                                    // Help or no intent identified, either way, let's provide some help.
-                                    // to the user
-                                    await dc.Context.SendActivityAsync("I didn't understand what you just said to me.");
+                                    // No intent was found, or the user requests some basic chit chat response.
+                                    await GetQnAResult(turnContext, cancellationToken);
                                     break;
                             }
 
@@ -187,6 +190,22 @@ private readonly IStatePropertyAccessor<InfoState> _infoStateAccessor;
 
             await _conversationState.SaveChangesAsync(turnContext);
             await _userState.SaveChangesAsync(turnContext);
+        }
+
+        private async Task GetQnAResult(ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            // Get the response from the QnA Maker
+            var response = await _services.QnAServices[QnAMakerKey].GetAnswersAsync(turnContext);
+            if (response != null && response.Length > 0)
+            {
+                await turnContext.SendActivityAsync(response[0].Answer, cancellationToken: cancellationToken);
+            }
+            else
+            {
+                // No response/ Q-A combination found. Return some default text to the user.
+                var msg = @"I don't know what to say... I'm just a simple Tosti Bot.";
+                await turnContext.SendActivityAsync(msg, cancellationToken: cancellationToken);
+            }
         }
 
         // Determine if an interruption has occurred before we dispatch to any active dialog.
