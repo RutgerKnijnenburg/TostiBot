@@ -1,6 +1,7 @@
 # Tosti Bot
 This bot is a demo bot used for development & training purposes. It uses the Microsoft Bot Framework (See https://dev.botframework.com/) and LUIS (See https://luis.ai) as NLP service.
 Development and improvement of this bot is tracked in a series of blogposts at https://mavention.com/blogs. 
+Most code originates from tutorials found on https://docs.microsoft.com/en-us/azure/bot-service/. This makes it easy to reference and troubleshoot. 
 
 # Services
 Currently added services to this Bot:
