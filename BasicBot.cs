@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BasicBot;
@@ -42,8 +43,8 @@ namespace Microsoft.BotBuilderSamples
 
         private readonly IStatePropertyAccessor<GreetingState> _greetingStateAccessor;
         private readonly IStatePropertyAccessor<TypeState> _getTypesStateAccessor;
-        private readonly IStatePropertyAccessor<DialogState> _dialogStateAccessor; 
-private readonly IStatePropertyAccessor<InfoState> _infoStateAccessor;
+        private readonly IStatePropertyAccessor<DialogState> _dialogStateAccessor;
+        private readonly IStatePropertyAccessor<InfoState> _infoStateAccessor;
         private readonly UserState _userState;
         private readonly InfoState _infoState;
         private readonly TypeState _typeState;
@@ -80,6 +81,7 @@ private readonly IStatePropertyAccessor<InfoState> _infoStateAccessor;
             }
 
             Dialogs = new DialogSet(_dialogStateAccessor);
+            Dialogs.Add(new CheckTostiDialog(loggerFactory));
             Dialogs.Add(new GreetingDialog(_greetingStateAccessor, loggerFactory));
             Dialogs.Add(new InfoDialog(_infoStateAccessor, loggerFactory));
             Dialogs.Add(new GetTypesDialog(_getTypesStateAccessor, loggerFactory, _storage));
@@ -102,6 +104,11 @@ private readonly IStatePropertyAccessor<InfoState> _infoStateAccessor;
 
             if (activity.Type == ActivityTypes.Message)
             {
+                if (activity.Attachments != null && activity.Attachments.Any())
+                {
+                    await dc.BeginDialogAsync(nameof(CheckTostiDialog));
+                    return;
+                }
                 // Perform a call to LUIS to retrieve results for the current activity message.
                 var luisResults = await _services.LuisServices[LuisConfiguration].RecognizeAsync(dc.Context, cancellationToken);
 
